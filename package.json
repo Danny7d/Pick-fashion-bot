@@ -1,0 +1,22 @@
+{
+  "name": "pick-fashion-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for Pick Fashion e-commerce",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "start:enhanced": "node bot-enhanced.js",
+    "dev": "nodemon bot.js",
+    "dev:enhanced": "nodemon bot-enhanced.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.3",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
