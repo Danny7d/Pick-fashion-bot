@@ -12,12 +12,12 @@ Functional Telegram bot that receives orders from the website and stores them in
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/start` | Welcome message |
-| `/orders` | View your orders |
-| `/help` | How to order |
-| `/contact` | Contact info |
+| Command    | Description      |
+| ---------- | ---------------- |
+| `/start`   | Welcome message  |
+| `/orders`  | View your orders |
+| `/help`    | How to order     |
+| `/contact` | Contact info     |
 
 ## Setup Instructions
 
@@ -32,18 +32,20 @@ Functional Telegram bot that receives orders from the website and stores them in
 
 ```bash
 cd bot
-cp .env.example .env
+cp .env
 ```
 
 Edit `.env`:
+
 ```
-BOT_TOKEN=8668555573:AAHfVVSqZBISbFfl0a6Zlwx40tvThmiKOrE
-SUPABASE_URL=https://sbbnnlhodiapxjdjjhcj.supabase.co
+BOT_TOKEN=your-telegram-bot-token
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-ADMIN_TELEGRAM_ID=your-id-here
+ADMIN_TELEGRAM_ID=your-admin-telegram-id
 ```
 
 Get `SUPABASE_SERVICE_ROLE_KEY` from:
+
 - Supabase Dashboard → Settings → API → service_role key
 
 ### Step 3: Install & Run
@@ -60,6 +62,7 @@ npm run dev
 ```
 
 You should see:
+
 ```
 🤖 Pick Fashion Bot is running...
 ✅ Bot is ready to receive orders!
@@ -69,6 +72,7 @@ You should see:
 ## Testing the Bot
 
 ### Method 1: From Website
+
 1. Start the bot: `npm start`
 2. Open your website
 3. Go to any product
@@ -78,7 +82,9 @@ You should see:
 7. Bot should reply with order confirmation!
 
 ### Method 2: Direct Message
+
 Send this to your bot:
+
 ```
 🛒 Order Inquiry: Test Product
 💰 Price: $25.00
@@ -90,7 +96,9 @@ Hi! I want to buy this product.
 ## Admin Workflow
 
 ### Receiving Orders
+
 When a customer places an order, you'll get a message:
+
 ```
 🔔 New Order!
 
@@ -103,10 +111,13 @@ Reply to this chat to confirm the order.
 ```
 
 ### Confirming Orders
+
 **Reply to the notification message** with:
+
 - `confirm` or `yes` or `✅`
 
 Bot will:
+
 1. Update order status in Supabase
 2. Reply "Order confirmed!"
 
@@ -127,6 +138,7 @@ orders:
 ## Running 24/7 (Production)
 
 ### Option 1: VPS/Cloud Server
+
 ```bash
 # Using PM2
 npm install -g pm2
@@ -136,29 +148,35 @@ pm2 startup
 ```
 
 ### Option 2: Railway/Render/Heroku
+
 1. Push code to GitHub
 2. Connect to Railway/Render
 3. Set environment variables
 4. Deploy
 
 ### Option 3: Local Computer (Testing)
+
 Just keep terminal open with `npm start`
 
 ## Troubleshooting
 
 ### Bot not responding?
+
 ```bash
 # Check if token is valid
 curl https://api.telegram.org/bot8668555573:AAHfVVSqZBISbFfl0a6Zlwx40tvThmiKOrE/getMe
 ```
+
 Should return your bot info.
 
 ### Orders not saving?
+
 - Check SUPABASE_SERVICE_ROLE_KEY is correct
 - Check database RLS policies
 - Check bot logs for errors
 
 ### Admin notifications not working?
+
 - Verify ADMIN_TELEGRAM_ID is correct
 - Make sure you've messaged the bot at least once
 - Check if bot can message you (not blocked)
@@ -176,18 +194,22 @@ bot/
 ## Customization
 
 ### Change Welcome Message
+
 Edit the `/start` handler in `bot.js`:
+
 ```javascript
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(chatId, 'Your custom message here');
+  bot.sendMessage(chatId, "Your custom message here");
 });
 ```
 
 ### Add More Commands
+
 Add new handlers:
+
 ```javascript
 bot.onText(/\/mycustom/, (msg) => {
-  bot.sendMessage(msg.chat.id, 'Custom response');
+  bot.sendMessage(msg.chat.id, "Custom response");
 });
 ```
 

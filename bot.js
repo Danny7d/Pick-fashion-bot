@@ -7,8 +7,7 @@ const { createClient } = require("@supabase/supabase-js");
 const express = require("express");
 
 // Initialize bot
-const TOKEN =
-  process.env.BOT_TOKEN || "8668555573:AAHfVVSqZBISbFfl0a6Zlwx40tvThmiKOrE";
+const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 // Initialize Supabase (service role for admin operations)
