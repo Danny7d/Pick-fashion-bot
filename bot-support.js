@@ -30,6 +30,13 @@ logger.info("🤖 Pick Fashion Support Bot is starting...");
 logger.info(`👑 Owner ID: ${config.OWNER_ID}`);
 logger.info(`👥 Admin Group ID: ${config.ADMIN_GROUP_ID}`);
 
+// Log bot identity and resolved ids to help diagnose routing issues
+bot.getMe().then((me) => {
+  logger.info(`Bot identity: @${me.username} (id=${me.id})`);
+}).catch((err) => {
+  logger.warn(`Could not fetch bot identity: ${err.message}`);
+});
+
 // ============================================================================
 // ADMIN COMMANDS
 // ============================================================================
@@ -95,6 +102,32 @@ bot.on("error", (error) => {
 const app = express();
 const PORT = config.PORT;
 
+app.use(express.json());
+
+function normalizeWebsitePayload(body) {
+  const customerId = Number(
+    body.customerId ||
+    body.customerTelegramId ||
+    body.telegramId ||
+    body.chatId ||
+    body.userId
+  );
+
+  return {
+    customerId,
+    username: body.username || body.customerUsername || body.telegramUsername || null,
+    customerName: body.customerName || body.name || null,
+    productId: body.productId || body.itemId || body.id || null,
+    productName: body.productName || body.itemName || body.title || null,
+    quantity: body.quantity || 1,
+    size: body.size || null,
+    color: body.color || null,
+    price: body.price || body.amount || null,
+    productUrl: body.productUrl || body.url || null,
+    note: body.note || body.message || body.details || null
+  };
+}
+
 app.get("/", (req, res) => {
   res.send("🤖 Pick Fashion Support Bot is alive!");
 });
@@ -106,6 +139,48 @@ app.get("/health", (req, res) => {
     bot: "support-relay",
     version: "1.0.0"
   });
+});
+
+app.post("/api/support-request", async (req, res) => {
+  const payload = normalizeWebsitePayload(req.body || {});
+
+  if (!payload.customerId || Number.isNaN(payload.customerId)) {
+    return res.status(400).json({
+      success: false,
+      error: "Missing valid customerId/customerTelegramId"
+    });
+  }
+
+  if (!payload.productName && !payload.note) {
+    return res.status(400).json({
+      success: false,
+      error: "Missing productName or note"
+    });
+  }
+
+  try {
+    const adminResult = await messageHandlers.handleWebsiteSupportRequest(
+      bot,
+      payload,
+      config
+    );
+
+    if (!adminResult.success) {
+      return res.status(500).json(adminResult);
+    }
+
+    return res.json({
+      success: true,
+      message: "Support request forwarded",
+      adminMessageId: adminResult.adminMessageId
+    });
+  } catch (error) {
+    logger.error(`Website support request failed: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 app.listen(PORT, () => {

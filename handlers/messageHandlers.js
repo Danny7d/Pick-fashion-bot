@@ -72,6 +72,28 @@ async function handleAdminGroupMessage(bot, msg, config) {
 }
 
 /**
+ * Handle support requests coming from the website backend
+ * Sends an acknowledgement to the customer and a mapped message to the admin group
+ */
+async function handleWebsiteSupportRequest(bot, payload, config) {
+  const customerId = Number(payload.customerId);
+
+  try {
+    const customerLines = [
+      'Thanks for your order request from Pick-Fashion.',
+      payload.productName ? `Item: ${payload.productName}` : null,
+      'Our team will contact you here shortly.'
+    ].filter(Boolean);
+
+    await bot.sendMessage(customerId, customerLines.join('\n'));
+  } catch (error) {
+    logger.warn(`Could not send website acknowledgement to customer ${customerId}: ${error.message}`);
+  }
+
+  return relayService.forwardWebsiteOrder(bot, payload, config.ADMIN_GROUP_ID);
+}
+
+/**
  * Handle /start command
  * Sends welcome message to customer
  */
@@ -89,5 +111,6 @@ function handleStart(bot, msg) {
 module.exports = {
   handleCustomerMessage,
   handleAdminGroupMessage,
-  handleStart
+  handleStart,
+  handleWebsiteSupportRequest
 };

@@ -4,12 +4,8 @@
   "description": "Telegram bot for Pick Fashion e-commerce",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js",
-    "start:enhanced": "node bot-enhanced.js",
-    "start:support": "node bot-support.js",
-    "dev": "nodemon bot.js",
-    "dev:enhanced": "nodemon bot-enhanced.js",
-    "dev:support": "nodemon bot-support.js"
+    "start": "node bot-support.js",
+    "dev": "nodemon bot-support.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
