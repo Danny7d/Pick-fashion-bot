@@ -6,11 +6,14 @@
   "scripts": {
     "start": "node bot.js",
     "start:enhanced": "node bot-enhanced.js",
+    "start:support": "node bot-support.js",
     "dev": "nodemon bot.js",
-    "dev:enhanced": "nodemon bot-enhanced.js"
+    "dev:enhanced": "nodemon bot-enhanced.js",
+    "dev:support": "nodemon bot-support.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
+    "better-sqlite3": "^12.10.0",
     "dotenv": "^16.3.1",
     "express": "^5.2.1",
     "node-telegram-bot-api": "^0.64.0",
