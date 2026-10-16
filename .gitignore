@@ -17,8 +17,11 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 yarn.lock
+
+# NOTE: package-lock.json is deliberately NOT ignored. Hosts that build with
+# `npm ci` (Nixpacks, Railway, Render, most CI) fail outright without a
+# committed lockfile. Keep it in git and let it drift.
 
 # Logs
 logs/
