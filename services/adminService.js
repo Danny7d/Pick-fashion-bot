@@ -1,8 +1,10 @@
 const { getDatabase } = require('../database/db');
 
 class AdminService {
-  constructor() {
-    this.db = getDatabase();
+  // Resolved lazily so the connection is opened by the entry point's
+  // initDatabase() call, not at require time.
+  get db() {
+    return getDatabase();
   }
 
   /**

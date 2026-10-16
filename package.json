@@ -2,13 +2,12 @@
   "name": "pick-fashion-bot",
   "version": "1.0.0",
   "description": "Telegram bot for Pick Fashion e-commerce",
-  "main": "bot.js",
+  "main": "bot-support.js",
   "scripts": {
     "start": "node bot-support.js",
     "dev": "nodemon bot-support.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.105.3",
     "better-sqlite3": "^12.10.0",
     "dotenv": "^16.3.1",
     "express": "^5.2.1",

@@ -2,8 +2,10 @@ const { getDatabase } = require('../database/db');
 const logger = require('../utils/logger');
 
 class RelayService {
-  constructor() {
-    this.db = getDatabase();
+  // Resolved lazily so the connection is opened by the entry point's
+  // initDatabase() call, not at require time.
+  get db() {
+    return getDatabase();
   }
 
   formatCustomerTag(username, name, customerId) {

@@ -5,6 +5,13 @@
 *.pem
 *.key
 
+# Local database files - these hold real customer IDs and message mappings
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
 # Dependencies
 node_modules/
 npm-debug.log*

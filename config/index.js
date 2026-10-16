@@ -8,10 +8,6 @@ const config = {
   OWNER_ID: process.env.OWNER_ID ? parseInt(process.env.OWNER_ID) : null,
   ADMIN_GROUP_ID: process.env.ADMIN_GROUP_ID ? parseInt(process.env.ADMIN_GROUP_ID) : null,
   
-  // Supabase configuration (for existing orders)
-  SUPABASE_URL: process.env.SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  
   // Server configuration
   PORT: process.env.PORT || 3000,
   

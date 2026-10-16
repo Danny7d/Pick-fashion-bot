@@ -10,19 +10,19 @@ const schemaPath = path.join(__dirname, 'schema.sql');
 let db;
 
 function initDatabase() {
-  // Create database if it doesn't exist
-  const dbExists = fs.existsSync(dbPath);
-  
+  if (db) {
+    return db;
+  }
+
   db = new Database(dbPath);
   db.pragma('journal_mode = WAL'); // Better concurrent access
-  
-  // Run schema if database is new
-  if (!dbExists) {
-    const schema = fs.readFileSync(schemaPath, 'utf-8');
-    db.exec(schema);
-    console.log('✅ Database initialized with schema');
-  }
-  
+
+  // Always apply the schema. Every statement in schema.sql is
+  // CREATE ... IF NOT EXISTS, so this is safe to re-run on an existing
+  // database and picks up new tables/indexes without a manual migration.
+  const schema = fs.readFileSync(schemaPath, 'utf-8');
+  db.exec(schema);
+
   return db;
 }
 

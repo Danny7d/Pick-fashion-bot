@@ -20,6 +20,9 @@ An admin-controlled Telegram support relay system for the Pick Fashion bot that 
 - **Admin replies** in the group are routed back to the correct customer
 - **Multi-format support**: text, images, videos, voice messages, documents
 - **Message mapping** stored in database for tracking
+- **Per-customer throttling** (15 messages/minute, small minimum gap) so the
+  admin group cannot be flooded
+- **Failure notice** to the customer if a forward does not go through
 
 ### Security
 - Only authorized admins can reply in the admin group
@@ -39,10 +42,11 @@ cp .env.example .env
 Required variables:
 - `BOT_TOKEN` - Your Telegram bot token from BotFather
 - `OWNER_ID` - Your Telegram user ID (get from @userinfobot)
-- `ADMIN_GROUP_ID` - Your private admin group ID (provided: -3802530197)
-- `SUPABASE_URL` - Supabase URL (for existing orders integration)
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
+- `ADMIN_GROUP_ID` - Your private admin group ID (negative; supergroups look like `-100…`)
 - `PORT` - Server port (default: 3000)
+
+The bot exits at startup if any of `BOT_TOKEN`, `OWNER_ID` or `ADMIN_GROUP_ID`
+is missing.
 
 ### 2. BotFather Settings
 
@@ -78,12 +82,12 @@ As the owner, use the bot to add admins:
 
 ### Production
 ```bash
-npm run start:support
+npm start
 ```
 
 ### Development (with auto-reload)
 ```bash
-npm run dev:support
+npm run dev
 ```
 
 ## How It Works
@@ -125,7 +129,8 @@ Pick-fashion-bot/
 │   ├── adminService.js    # Admin management
 │   └── relayService.js    # Message relay logic
 ├── utils/
-│   └── logger.js          # Logging utility
+│   ├── logger.js          # Logging utility
+│   └── rateLimiter.js     # Per-customer throttling
 └── logs/
     └── bot.log            # Bot logs (auto-created)
 ```
@@ -177,8 +182,12 @@ All activities are logged to `logs/bot.log`:
 - Check that SQLite is properly installed
 - Verify database file permissions
 
-## Integration with Existing Bot
+## Integration with the Website
 
-This support system is separate from the existing order bot (`bot.js` and `bot-enhanced.js`). You can run both bots simultaneously if needed, or replace the existing bot with this support-focused version.
+There is no separate order bot anymore: `bot-support.js` is the only entry
+point. Orders placed on the website reach this bot through
+`POST /api/support-request`, which forwards the details to the admin group and
+sends the customer an acknowledgement on Telegram. Reply in the group to talk
+to that customer; reply with `confirm` to send the order-confirmation template.
 
-The support bot focuses on customer support relay, while the existing bots handle order management.
+See [README.md](README.md) for the endpoint's accepted fields.

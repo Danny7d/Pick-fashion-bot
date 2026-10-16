@@ -1,5 +1,6 @@
 const relayService = require('../services/relayService');
 const adminService = require('../services/adminService');
+const rateLimiter = require('../utils/rateLimiter');
 const logger = require('../utils/logger');
 
 /**
@@ -9,26 +10,56 @@ const logger = require('../utils/logger');
 async function handleCustomerMessage(bot, msg, config) {
   const chatId = msg.chat.id;
   const text = msg.text;
-  
+
   // Skip commands
   if (text && text.startsWith('/')) {
     return;
   }
-  
+
   // Skip messages from admin group (they're handled separately)
   if (chatId === config.ADMIN_GROUP_ID) {
     return;
   }
-  
+
+  // Throttle customers so nobody can flood the admin group
+  const rate = rateLimiter.checkMessage(chatId);
+
+  if (!rate.allowed) {
+    logger.warn(`Rate limited customer ${chatId} (${rate.reason}, ${rate.retryAfterSeconds}s)`);
+
+    if (rate.shouldWarn) {
+      try {
+        await bot.sendMessage(
+          chatId,
+          `You're sending messages a bit too quickly. Please wait about ${rate.retryAfterSeconds}s and try again.`
+        );
+      } catch (error) {
+        logger.warn(`Could not send rate-limit notice to ${chatId}: ${error.message}`);
+      }
+    }
+
+    return;
+  }
+
   logger.info(`Incoming message from customer ${chatId}`);
-  
+
   // Forward to admin group
   const result = await relayService.forwardToAdminGroup(bot, msg, config.ADMIN_GROUP_ID);
-  
+
   if (result.success) {
     logger.info(`Message forwarded to admin group successfully`);
   } else {
     logger.error(`Failed to forward message: ${result.error}`);
+
+    // Tell the customer something went wrong instead of going silent
+    try {
+      await bot.sendMessage(
+        chatId,
+        "Sorry, something went wrong and your message didn't reach our team. Please try again in a moment, or email us at pickfashionzr@gmail.com."
+      );
+    } catch (error) {
+      logger.warn(`Could not send failure notice to ${chatId}: ${error.message}`);
+    }
   }
 }
 
